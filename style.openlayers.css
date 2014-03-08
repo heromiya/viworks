@@ -1,0 +1,157 @@
+/* Custom editing toolbar */
+html, body {
+             margin: 0;
+             padding: 0;
+             font-size:0.9em;
+             }
+.customEditingToolbar {
+                        float: right;
+                        right: 0px;
+                        top: 0px;
+                        height: 30px;
+                        width: 280px;
+                        }
+.customEditingToolbar div {
+                            float: right;
+                            margin: 1px;
+                            width: 24px;
+                            height: 24px;
+                            }
+.olControlNavigationItemActive {
+                                 background-image:
+                                 url("icons/mActionPan_on.png");
+                                 background-repeat: no-repeat;
+                                 background-position: 0px 1px;
+                                 }
+.olControlNavigationItemInactive {
+                                   background-image:
+                                   url("icons/mActionPan_off.png");
+                                   background-repeat: no-repeat;
+                                   background-position: 0px 1px;
+                                   }
+.olControlDrawFeaturePolygonItemInactive {
+                                           background-image:
+                                           url("icons/mActionCapturePolygon_off.png");
+                                           background-repeat: no-repeat;
+                                           background-position: 0px 1px;
+                                           background-color: "#FFCC66";
+                                           }
+.olControlDrawFeaturePolygonItemActive {
+                                         background-image:
+                                         url("icons/mActionCapturePolygon_on.png");
+                                         background-repeat: no-repeat;
+                                         background-position: 0px 1px;
+                                         }
+.olControlDrawFeaturePathItemInactive {
+                                           background-image:
+                                           url("icons/mActionCaptureLine_off.png");
+                                           background-repeat: no-repeat;
+                                           background-position: 0px 1px;
+                                           background-color: "#FFCC66";
+                                           }
+.olControlDrawFeaturePathItemActive {
+                                         background-image:
+                                         url("icons/mActionCaptureLine_on.png");
+                                         background-repeat: no-repeat;
+                                         background-position: 0px 1px;
+                                         }
+.olControlDrawFeaturePolygonInactiveItemInactive {
+                                           background-image:
+                                           url("icons/mActionCapturePolygon_off.png");
+                                           background-repeat: no-repeat;
+                                           background-position: 0px 1px;
+                                           background-color: "#FFCC66";
+                                           }
+.olControlDrawFeaturePolygonInactiveItemActive {
+                                         background-image:
+                                         url("icons/mActionCapturePolygon_off.png");
+                                         background-repeat: no-repeat;
+                                         background-position: 0px 1px;
+                                         }
+
+.olControlUndoItemInactive {
+                                           background-image:
+                                           url("icons/mActionUndo_off.png");
+                                           background-repeat: no-repeat;
+                                           background-position: 0px 1px;
+                                           background-color: "#FFCC66";
+                                           }
+.olControlUndoItemActive {
+                                         background-image:
+                                         url("icons/mActionUndo_on.png");
+                                         background-repeat: no-repeat;
+                                         background-position: 0px 1px;
+                                         }
+.olControlRedoItemInactive {
+                                           background-image:
+                                           url("icons/mActionRedo_off.png");
+                                           background-repeat: no-repeat;
+                                           background-position: 0px 1px;
+                                           background-color: "#FFCC66";
+                                           }
+.olControlRedoItemActive {
+                                         background-image:
+                                         url("icons/mActionRedo_on.png");
+                                         background-repeat: no-repeat;
+                                         background-position: 0px 1px;
+                                         }
+.olControlCancelItemActive {
+                                    background-image:
+                                    url("icons/mActionDeleteSelected_on.png");
+                                    background-repeat: no-repeat;
+                                    background-position: 0px 1px;
+                                    }
+.olControlCancelItemInactive {
+                                      background-image:
+                                      url("icons/mActionDeleteSelected_off.png");
+                                      background-repeat: no-repeat;
+                                      background-position: 0px 1px;
+                                      }
+.olControlModifyFeatureItemActive {
+                                    background-image:
+                                    url("icons/mActionNodeTool_on.png");
+                                    background-repeat: no-repeat;
+                                    background-position: 0px 1px;
+                                    }
+.olControlModifyFeatureItemInactive {
+                                      background-image:
+                                      url("icons/mActionNodeTool_off.png");
+                                      background-repeat: no-repeat;
+                                      background-position: 0px 1px;
+                                      }
+.olControlDeleteFeatureItemActive {
+                                    background-image:
+                                    url("icons/mIconDelete_on.png");
+                                    background-repeat: no-repeat;
+                                    background-position: 0px 1px;
+                                    }
+.olControlDeleteFeatureItemInactive {
+                                      background-image:
+                                      url("icons/mIconDelete_off.png");
+                                      background-repeat: no-repeat;
+                                      background-position: 0px 1px;
+                                      }
+.olControlSelectFeatureItemActive {
+                                    background-image:
+                                    url("icons/mActionIdentify_on.png");
+                                    background-repeat: no-repeat;
+                                    background-position: 0px 1px;
+                                    }
+.olControlSelectFeatureItemInactive {
+                                      background-image:
+                                      url("icons/mActionIdentify_off.png");
+                                      background-repeat: no-repeat;
+                                      background-position: 0px 1px;
+                                      }
+.olControlSaveItemActive {
+                                    background-image:
+                                    url("icons/mActionSaveEdits_on.png");
+                                    background-repeat: no-repeat;
+                                    background-position: 0px 1px;
+                                    }
+.olControlSaveItemInactive {
+                                      background-image:
+                                      url("icons/mActionSaveEdits_off.png");
+                                      background-repeat: no-repeat;
+                                      background-position: 0px 1px;
+                                      }
