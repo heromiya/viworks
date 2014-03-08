@@ -45,6 +45,7 @@ where dawei_assignment.tilex = dawei_target.tilex
   and dawei_assignment.refimage_gid = dawei_target.refimage_gid
   and username = '%s'
   and (end_ts is null or end_ts > '2100-01-01')
+  and dawei_target.priority = 1
 order by seq
 limit 1
 ;", $username);
@@ -62,12 +63,13 @@ limit 1
                                        and dawei_assignment.refimage_gid = dawei_target.refimage_gid
 
                                        where dawei_assignment.gid is null 
+                                         and dawei_target.priority = 1
                                        limit 1;"),0);
 	$TILEX=$row['tilex'];
 	$TILEY=$row['tiley'];
 	$REFIMAGE_GID=$row['refimage_gid'];
 	$FIRST_TILE= $TILEX.'-'.$TILEY.'-'.$REFIMAGE_GID;
-	pg_exec("insert into dawei_assignment (gid,username,typename,assign_ts,tilex,tiley,refimage_gid) values('".$FIRST_TILE."','".$username."', 'FIRST',now(),".$TILEX.",".$TILEY.",".$REFIMAGE_GID.");");
+	pg_exec("insert into dawei_assignment (gid,username,typename,assign_ts,tilex,tiley,refimage_gid) values('".$FIRST_TILE."','".$username."', 'FIRST',now(),".$TILEX.",".$TILEY.",'".$REFIMAGE_GID."');");
 	$NUM_TILES=2;
 	$NEAREST_TILES = pg_exec("
 SELECT t2.gid
@@ -85,9 +87,12 @@ from dawei_target as t1
         on dawei_assignment.tilex = dawei_target.tilex
        and dawei_assignment.tiley = dawei_target.tiley
        and dawei_assignment.refimage_gid = dawei_target.refimage_gid
-      where dawei_assignment.gid is null) as t2
+      where dawei_assignment.gid is null
+        and dawei_target.priority = 1
+) as t2
 where t1.tilex || '-'|| t1.tiley || '-' || t1.refimage_gid = '" . $FIRST_TILE . "' 
-  and not ST_Equals(t1.the_geom, t2.the_geom) 
+  and not ST_Equals(t1.the_geom, t2.the_geom)
+ 
 order by ST_Distance(ST_Centroid(t1.the_geom),ST_Centroid(t2.the_geom)) 
 limit " . $NUM_TILES  . ";");
 	for ($i = 0; $i < pg_num_rows($NEAREST_TILES) ; $i++){
@@ -124,6 +129,7 @@ left join dawei_assignment
  and dawei_assignment.refimage_gid = dawei_target.refimage_gid
 where dawei_target.tilex || '-' ||dawei_target.tiley || '-' || dawei_target.refimage_gid != '" . $FIRST_TILE . "' 
   and dawei_assignment.gid is null 
+  and dawei_target.priority = 1
 order by RANDOM() 
 limit " . $NUM_TILES . ";");
 	for ($i = 0; $i < pg_num_rows($RANDOM_TILES) ; $i++){
@@ -154,6 +160,7 @@ limit " . $NUM_TILES . ";");
                     where username = '%s'
                       and start_ts is null
                       and (end_ts is null or end_ts > '2100-01-01')
+                        and dawei_target.priority = 1
                     order by seq
                     limit 1
 ;", $username);
@@ -238,7 +245,7 @@ print <<< EOF
 			      <a href="achievements.php">Browse/revise achievements</a>
 			    </td>
 			  </tr>
-			  <tr>
+			  <!--<tr>
 			    <td colspan="2">
 			      <a href="pending.php">Browse pending areas</a>
 			    </td>
@@ -252,7 +259,7 @@ print <<< EOF
 			    <td colspan="2">
 			      <a href="worktime.stats.ind.php">Browse working/rewarded time</a>
 			    </td>
-			  </tr>
+			  </tr>-->
 			</form>
 		    </td>
 		  </tr>
