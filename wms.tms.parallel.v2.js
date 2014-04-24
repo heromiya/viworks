@@ -183,6 +183,18 @@ function init(lonmin,latmin,lonmax,latmax,username,zlonmin,zlatmin,zlonmax,zlatm
 		    setTimeout("document.getElementById('nodelist').innerHTML = ''",5000);
 		}
 	    }
+	    ,filter:  new OpenLayers.Filter.Logical(
+                {type: OpenLayers.Filter.Logical.AND,
+                 filters: [
+                     new OpenLayers.Filter.Comparison(
+                         {type: OpenLayers.Filter.Comparison.EQUAL_TO,
+                          property: "refimage",
+                          value: refimage_gid
+                         })
+                 ]
+                }
+            )
+
 	}
     );
     

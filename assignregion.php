@@ -25,7 +25,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 	if (!($rs = pg_exec($sql))) { die; }
     }
     if ($interrupt == 1){
-	$sql = sprintf("update dawei_assignment set start_ts = '' where gid = %d and username = '%s' and start_ts is not null;",$username,$qid);
+	$sql = sprintf("update dawei_assignment set start_ts = '' where gid = '%s' and username = '%s' and start_ts is not null;",$username,$qid);
 	if (!($rs = pg_exec($sql))) { die; }
     }
     $sql = sprintf("
@@ -189,6 +189,7 @@ limit " . $NUM_TILES . ";");
     $refimage_gid=$row['refimage_gid'];
     $pixelsize=0.0001388888888888888888888;
     $thumbsize=360;
+    //    $wmsthumb='http://'.$WEBHOST.'/cgi-bin/mapserv?map=/var/www/dawei/landsat.map&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS='.$refimage_gid.',vi_urban_polygon,vi_urban_line,vi_unknown_polygon,vi_unknown_line,vi_revise_polygon,vi_revise_line,vi_pending_polygon,vi_pending_line&WIDTH='.$thumbsize.'&HEIGHT='.$thumbsize.'&SRS=EPSG:4326&FORMAT=JPEG&BBOX=';
     $wmsthumb='http://'.$WEBHOST.'/cgi-bin/mapserv?map=/var/www/dawei/landsat.map&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS='.$refimage_gid.'&WIDTH='.$thumbsize.'&HEIGHT='.$thumbsize.'&SRS=EPSG:4326&FORMAT=JPEG&BBOX=';
     $tiles='<img height="360" width="360" src="'.$wmsthumb.$lonmin.','.$latmin.','.$lonmax.','.$latmax.'">';
     pg_close($cn);

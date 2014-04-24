@@ -35,9 +35,9 @@ if($proj1==NULL) $proj1 = "WGS84";
 
 //alert($proj1);
 
-$sql = sprintf("insert into logintime (username,logintime,qid) values ('%s', now(),%d);",$username,$qid);
+$sql = sprintf("insert into dawei_logintime (username,logintime,qid) values ('%s', now(),'%s');",$username,$qid);
 if (!($rs = pg_exec($sql))) {die;}
-$sql = sprintf("update dawei_assignment set start_ts = now() where gid = '%d' and username = '%s' and start_ts is null;",$qid,$username);
+$sql = sprintf("update dawei_assignment set start_ts = now() where gid = '%s' and username = '%s' and start_ts is null;",$qid,$username);
 if (!($rs = pg_exec($sql))) { die; }
 
 ?>

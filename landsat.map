@@ -45,6 +45,162 @@ END
   END
 
   LAYER
+    NAME 'vi_urban_polygon'
+    TYPE POLYGON
+    STATUS OFF
+    EXTENT -180 -90 180 90
+    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
+    CONNECTIONTYPE postgis
+    DATA "the_geom from dawei_viworks"
+    OPACITY 50
+    FILTERITEM vi
+    FILTER (vi='urban')
+    CLASSITEM vi
+    CLASS
+      STYLE
+        COLOR 102 102 255
+	OUTLINECOLOR 0 0 255
+      END
+    END
+  END
+
+  LAYER
+    NAME 'vi_urban_line'
+    TYPE LINE
+    STATUS OFF
+    EXTENT -180 -90 180 90
+    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
+    CONNECTIONTYPE postgis
+    DATA "the_geom from dawei_viworks"
+    OPACITY 50
+    FILTERITEM vi
+    FILTER (vi='urban')
+    CLASSITEM vi
+    CLASS
+      STYLE
+		OUTLINECOLOR 0 0 255
+      END
+    END
+  END
+
+  LAYER
+    NAME 'vi_unknown_polygon'
+    TYPE POLYGON
+    STATUS OFF
+    EXTENT -180 -90 180 90
+    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
+    CONNECTIONTYPE postgis
+    DATA "the_geom from dawei_viworks"
+    OPACITY 50
+    FILTERITEM vi
+    FILTER (vi='unknown')
+    CLASSITEM vi
+    CLASS
+      STYLE
+        COLOR 255 255 102
+	OUTLINECOLOR 255 102 0
+      END
+    END
+  END
+
+  LAYER
+    NAME 'vi_unknown_line'
+    TYPE LINE
+    STATUS OFF
+    EXTENT -180 -90 180 90
+    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
+    CONNECTIONTYPE postgis
+    DATA "the_geom from dawei_viworks"
+    OPACITY 50
+    FILTERITEM vi
+    FILTER (vi='unknown')
+    CLASSITEM vi
+    CLASS
+      STYLE
+		OUTLINECOLOR 255 102 0
+      END
+    END
+  END
+
+   LAYER
+    NAME 'vi_revise_polygon'
+    TYPE POLYGON
+    STATUS OFF
+    EXTENT -180 -90 180 90
+    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
+    CONNECTIONTYPE postgis
+    DATA "the_geom from dawei_viworks"
+    OPACITY 50
+    FILTERITEM vi
+    FILTER (vi='revise')
+    CLASSITEM vi
+    CLASS
+      STYLE
+        COLOR 255 255 153
+		OUTLINECOLOR 255 255 0
+      END
+    END
+  END
+
+  LAYER
+    NAME 'vi_revise_line'
+    TYPE LINE
+    STATUS OFF
+    EXTENT -180 -90 180 90
+    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
+    CONNECTIONTYPE postgis
+    DATA "the_geom from dawei_viworks"
+    OPACITY 50
+    FILTERITEM vi
+    FILTER (vi='revise')
+    CLASSITEM vi
+    CLASS
+      STYLE
+		OUTLINECOLOR 255 255 0
+	  END
+    END
+  END
+
+   LAYER
+    NAME 'vi_pending_polygon'
+    TYPE POLYGON
+    STATUS OFF
+    EXTENT -180 -90 180 90
+    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
+    CONNECTIONTYPE postgis
+    DATA "the_geom from dawei_viworks"
+    OPACITY 50
+    FILTERITEM vi
+    FILTER (vi='pending')
+    CLASSITEM vi
+    CLASS
+      STYLE
+        COLOR 204 102 153
+		OUTLINECOLOR 204 0 102
+      END
+    END
+  END
+
+  LAYER
+    NAME 'vi_pending_line'
+    TYPE LINE
+    STATUS OFF
+    EXTENT -180 -90 180 90
+    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
+    CONNECTIONTYPE postgis
+    DATA "the_geom from dawei_viworks"
+    OPACITY 50
+    FILTERITEM vi
+    FILTER (vi='pending')
+    CLASSITEM vi
+    CLASS
+      STYLE
+		OUTLINECOLOR 204 0 102
+	  END
+    END
+  END
+
+  LAYER
     NAME 'bg_aster4practice'
     TYPE RASTER
     DUMP true

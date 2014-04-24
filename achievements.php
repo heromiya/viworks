@@ -33,7 +33,7 @@ if ($unfinished == 1) {
     $stm->execute(array($gid));
 }
 
-$sql = sprintf("select username
+$sql = sprintf("select distinct username
                       ,dawei_assignment.gid
                       ,end_ts
                       ,dawei_assignment.refimage_gid
