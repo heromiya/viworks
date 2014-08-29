@@ -1,4 +1,6 @@
 <?php
+set_time_limit(120);
+
 require_once 'MDB2.php';
 
 $username=$_SERVER['PHP_AUTH_USER'];

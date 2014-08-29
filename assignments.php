@@ -8,7 +8,7 @@ $unpaid=$_POST['unpaid'];
 $reassign=$_POST['reassign'];
 
 $gid=$_POST['gid'];
-if(isset($_GET['sbu'])) $sort_str = "username,";
+if(isset($_GET['sbu'])) $sort_str = "t.username,";
 $filter_finished=$_POST['filter_finished'];
 $filter_approved=$_POST['filter_approved'];
 $filter_paid=$_POST['filter_paid'];
@@ -54,7 +54,7 @@ if ($unpaid == 1) {
 }
 
 if ($filter_finished==1){
-	$whereclause="where end_ts is not null and end_ts != '9999-12-31' and start_ts is not null and approver !~ '.*kimijimasatomi.*'";
+	$whereclause="where t.end_ts is not null and t.end_ts != '9999-12-31' and t.start_ts is not null and approver !~ '.*kimijimasatomi.*'";
 }
 if ($filter_approved==1){
 	$whereclause="where approver ~ '.*kimijimasatomi.*' and (paid_timestamp is null or paid_timestamp = '9999-12-31 00:00:00')";
@@ -64,48 +64,53 @@ if ($filter_paid==1){
 }
 
 $sql = sprintf("
-select distinct * 
-from (select  dawei_assignment.username as username
-	    , dawei_assignment.gid
-	    , dawei_assignment.start_ts
-	    , dawei_assignment.end_ts
-	    ,paid_timestamp
-            ,dawei_assignment.refimage_gid
-	    ,sum as worktime
-            ,extract(epoch from sum) as worktime_sec
-	    ,avg
-	    ,stddev
-	    ,nfeature
-	    ,ST_XMax(ST_Transform(the_geom,4326)) as lonmax
-	    ,ST_XMin(ST_Transform(the_geom,4326)) as lonmin
-	    ,ST_YMax(ST_Transform(the_geom,4326)) as latmax
-	    ,ST_YMin(ST_Transform(the_geom,4326)) as latmin
-	    ,ARRAY_TO_STRING(
-			     ARRAY(
-			           SELECT dawei_approval.username 
-                                          || ' ' 
-                                          || date_part('year',dawei_approval.insert_timestamp) 
-                                          || '-' 
-                                          || date_part('month',dawei_approval.insert_timestamp) 
-                                          || '-' 
-                                          || date_part('day',dawei_approval.insert_timestamp) 
-                                   FROM dawei_approval
-				   WHERE dawei_approval.qid=dawei_assignment.gid
-                                     and dawei_approval.insert_timestamp > '2013-11-10 00:00:00' 
-				   ORDER BY dawei_approval.username
-				  ), '<br>'
-			    ) AS approver
-            ,seq
-      from dawei_assignment
-      ,dawei_target
-      ,dawei_worktime_by_region
-      where dawei_assignment.gid = dawei_target.tilex || '-' || dawei_target.tiley || '-' || dawei_target.refimage_gid
-        and dawei_assignment.gid = dawei_worktime_by_region.gid
+select distinct *
+    ,t.gid
+    ,t.username
+    ,t.end_ts
+    ,t.start_ts
+    ,sum as worktime
+    ,extract(epoch from sum) as worktime_sec
+    ,avg
+    ,stddev
+    ,nfeature
+from (
+    select 
+	dawei_assignment.username as username
+        , dawei_assignment.gid
+        , dawei_assignment.start_ts
+        , dawei_assignment.end_ts
+        ,paid_timestamp
+        ,dawei_assignment.refimage_gid
+        ,ST_XMax(ST_Transform(the_geom,4326)) as lonmax
+        ,ST_XMin(ST_Transform(the_geom,4326)) as lonmin
+        ,ST_YMax(ST_Transform(the_geom,4326)) as latmax
+        ,ST_YMin(ST_Transform(the_geom,4326)) as latmin
+        ,ARRAY_TO_STRING(
+            ARRAY(
+            SELECT dawei_approval.username
+                || ' '
+                || date_part('year',dawei_approval.insert_timestamp)
+                || '-'
+                || date_part('month',dawei_approval.insert_timestamp)
+                || '-'
+                || date_part('day',dawei_approval.insert_timestamp)
+            FROM dawei_approval
+            WHERE dawei_approval.qid=dawei_assignment.gid
+                and dawei_approval.insert_timestamp > '2013-11-10 00:00:00'
+            ORDER BY dawei_approval.username
+                ), '<br>'
+            ) AS approver
+        ,seq
+    from dawei_assignment
+	,dawei_target 
+    where dawei_assignment.gid = dawei_target.tilex || '-' || dawei_target.tiley || '-' || dawei_target.refimage_gid
         and (dawei_assignment.end_ts > '2013-11-10 00:00:00' or dawei_assignment.end_ts is null)
-
-	order by ".$sort_str."	end_ts,start_ts) as t
-	".$whereclause."
-	;");
+	) as t
+    left join dawei_worktime_by_region on t.gid = dawei_worktime_by_region.gid
+    ".$whereclause."
+order by ".$sort_str."	t.end_ts,t.start_ts 
+    ;");
 
 	if (!($rs = pg_exec($sql))) {die;}
 	$nrow = pg_num_rows($rs);
@@ -159,14 +164,14 @@ from (select  dawei_assignment.username as username
 
 	$html = $html . "<tr align='center'><td>" . $row["username"] . "</td>"
 	    . "<td>" . $row["gid"] . "</td>"
-	    . "<td>" . ereg_replace('\.[0-9]*$','',$row["start_ts"]) . "</td>"
-	    . "<td>" . ereg_replace('\.[0-9]*$','',$row["end_ts"]) . "</td>"
-	    . "<td>" . ereg_replace('\.[0-9]*$','',$row["worktime"]) . "</td>"
+	    . "<td>" . preg_replace('/\.[0-9]*$/','',$row["start_ts"]) . "</td>"
+	    . "<td>" . preg_replace('/\.[0-9]*$/','',$row["end_ts"]) . "</td>"
+	    . "<td>" . preg_replace('/\.[0-9]*$/','',$row["worktime"]) . "</td>"
 	    //. "<td>" . $row["worktime_sec"] . "</td>"
 	    . "<td>" . $row["nfeature"] . "</td>"
-	    . "<td>" . ereg_replace('\.[0-9]*$','',$row["avg"]) . "</td>"
-	    . "<td>" . ereg_replace('\.[0-9]*$','',$row["stddev"]) . "</td>"
-	    . "<td>" . $tiles . "</td>"
+	    . "<td>" . preg_replace('/\.[0-9]*$/','',$row["avg"]) . "</td>"
+	    . "<td>" . preg_replace('/\.[0-9]*$/','',$row["stddev"]) . "</td>"
+	    //. "<td>" . $tiles . "</td>"
 	    . "<td><a href='wms.tms.parallel.v2.php?lonmin=". $row["lonmin"] ."&latmin=". $row["latmin"] ."&lonmax=". $row["lonmax"] ."&latmax=". $row["latmax"] ."&qid=".$row["gid"]."&refimage_gid=".$row["refimage_gid"]."'>Revise</a>" . "</td>"
 	    . "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."'>"
 	    . "<input type='hidden' name='unfinished' value='1'>"
@@ -293,9 +298,13 @@ a:active { color: #ff0000; }
     <script type="text/javascript" language="javascript" src="DataTables/js/jquery.js"></script>
     <script type="text/javascript" language="javascript" src="DataTables/js/jquery.dataTables.js"></script>
     <script type="text/javascript" charset="utf-8">
-      $(document).ready(function() {
-      $('#example').dataTable();
-      } );
+    $(document).ready(function() {
+	$('#example').dataTable({
+		"paging":   false,
+		    "ordering": false,
+		    "info":     false
+	});
+    } );
     </script>
   </head>
   <body>
@@ -326,7 +335,7 @@ a:active { color: #ff0000; }
       </div>
       <div id="content">
 	<!--<table border='1' style='border-width: thin; border-style: solid; border-collapse: collapse'>-->
-	  <table ellpadding="0" cellspacing="0" border="0" class="display" id="example" width="100%">
+	  <table ellpadding="0" cellspacing="0" border="1" class="display" width="100%">
 	  <thead>
 	  <tr>
             <th>
@@ -356,9 +365,9 @@ a:active { color: #ff0000; }
             <th width="2em">
               Std. deviation of drawing time by feature (sec.)
             </th>
-            <th width="3em">
+            <!--<th width="3em">
               Overview: Click to show thumbnail
-            </th>
+            </th>-->
             <th>
               Revise
             </th>

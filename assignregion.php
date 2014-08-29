@@ -45,7 +45,7 @@ where dawei_assignment.tilex = dawei_target.tilex
   and dawei_assignment.refimage_gid = dawei_target.refimage_gid
   and username = '%s'
   and (end_ts is null or end_ts > '2100-01-01')
-  and dawei_target.priority = 1
+  and dawei_target.priority = 2
 order by seq
 limit 1
 ;", $username);
@@ -63,7 +63,7 @@ limit 1
                                        and dawei_assignment.refimage_gid = dawei_target.refimage_gid
 
                                        where dawei_assignment.gid is null 
-                                         and dawei_target.priority = 1
+                                         and dawei_target.priority = 2
                                        limit 1;"),0);
 	$TILEX=$row['tilex'];
 	$TILEY=$row['tiley'];
@@ -88,7 +88,7 @@ from dawei_target as t1
        and dawei_assignment.tiley = dawei_target.tiley
        and dawei_assignment.refimage_gid = dawei_target.refimage_gid
       where dawei_assignment.gid is null
-        and dawei_target.priority = 1
+        and dawei_target.priority = 2
 ) as t2
 where t1.tilex || '-'|| t1.tiley || '-' || t1.refimage_gid = '" . $FIRST_TILE . "' 
   and not ST_Equals(t1.the_geom, t2.the_geom)
@@ -129,7 +129,7 @@ left join dawei_assignment
  and dawei_assignment.refimage_gid = dawei_target.refimage_gid
 where dawei_target.tilex || '-' ||dawei_target.tiley || '-' || dawei_target.refimage_gid != '" . $FIRST_TILE . "' 
   and dawei_assignment.gid is null 
-  and dawei_target.priority = 1
+  and dawei_target.priority = 2
 order by RANDOM() 
 limit " . $NUM_TILES . ";");
 	for ($i = 0; $i < pg_num_rows($RANDOM_TILES) ; $i++){
@@ -160,7 +160,7 @@ limit " . $NUM_TILES . ";");
                     where username = '%s'
                       and start_ts is null
                       and (end_ts is null or end_ts > '2100-01-01')
-                        and dawei_target.priority = 1
+                        and dawei_target.priority = 2
                     order by seq
                     limit 1
 ;", $username);
