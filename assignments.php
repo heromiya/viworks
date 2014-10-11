@@ -6,7 +6,11 @@ $unapprove=$_POST['unapprove'];
 $paid=$_POST['paid'];
 $unpaid=$_POST['unpaid'];
 $reassign=$_POST['reassign'];
-
+$satellite_gid=$_POST['satellite_gid'];
+$page=$_GET['page'];
+if (is_null($page)) {
+$page = 1;
+}
 $gid=$_POST['gid'];
 if(isset($_GET['sbu'])) $sort_str = "t.username,";
 $filter_finished=$_POST['filter_finished'];
@@ -63,8 +67,15 @@ if ($filter_paid==1){
 	$whereclause="where paid_timestamp is not null and paid_timestamp != '9999-12-31 00:00:00'";
 }
 
-$sql = sprintf("
-select distinct *
+if (!is_null($satellite_gid)){
+   if(is_null($whereclause)){
+   		   $whereclause="where t.gid like '%" . $satellite_gid . "'";
+   }else{
+   $whereclause=$whereclause . "and t.gid like '%" . $satellite_gid . "'";
+}
+}
+
+$sql = "select distinct *
     ,t.gid
     ,t.username
     ,t.end_ts
@@ -109,8 +120,7 @@ from (
 	) as t
     left join dawei_worktime_by_region on t.gid = dawei_worktime_by_region.gid
     ".$whereclause."
-order by ".$sort_str."	t.end_ts,t.start_ts 
-    ;");
+order by ".$sort_str." t.end_ts,t.start_ts OFFSET ". ($page-1) * 100 ." limit 100;";
 
 	if (!($rs = pg_exec($sql))) {die;}
 	$nrow = pg_num_rows($rs);
@@ -247,14 +257,10 @@ ul {
      list-style-type: none;
      font-size:0.8em;
      }
-
-/* --- 全体のリンクテキスト --- */
 a:link { color: #0000ff; }
 a:visited { color: #800080; }
 a:hover { color: #ff0000; }
 a:active { color: #ff0000; }
-
-/* --- コンテナ --- */
 #container {
              //width: 1200px; /* ページの幅 */
              margin: 0 auto; /* センタリング */
@@ -262,25 +268,17 @@ a:active { color: #ff0000; }
              border-left: 1px #c0c0c0 solid; /* 左の境界線 */
              border-right: 1px #c0c0c0 solid; /* 右の境界線 */
              }
-
-/* --- ヘッダ --- */
 #header {
           background-color: #ffe080; /* ヘッダの背景色 */
           }
-
-/* --- ナビゲーション --- */
 #nav {
        float: left;
        width: 120px; /* サイドバーの幅 */
        }
-
-/* --- メインカラム --- */
 #content {
            float: left;
            //width: 80%; /* メインカラムの幅 */
            }
-
-/* --- フッタ --- */
 #footer {
           clear: left; /* フロートのクリア */
           width: 100%;
@@ -310,7 +308,8 @@ a:active { color: #ff0000; }
   <body>
     <div id="container">
       <div id="header">
-	<a href="assignregion.php">Back to assignment</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>?sbu=1">Sort by User name</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>">Sort by Start time and Finished time</a>
+	<a href="assignregion.php">Back to assignment</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>?sbu=1">Sort by User name</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>">Sort by Start time and Finished time</a><br>Filter by satellite data granule id<form style="display: inline" name="satellite_gid" method="POST" action="<?php echo $_SERVER['SCRIPT_NAME'];?>"><input type=text name="satellite_gid" /><input type=submit value="filter" />(e.g. LM11400501972356AAA04; to remove filter, click "filter" without any input.)</form>
+	<br><a href="?page=<?php if($page==1){echo 1;}else{echo $page-1;};?>">prev</a> Page <?php echo $page;?> <a href="?page=<?php echo $page+1;?>">next</a>
       </div>
       <div id="nav">
 	<ul>
@@ -327,6 +326,8 @@ a:active { color: #ff0000; }
 	  <li><a href="" onclick="document.paid.submit();return false;">Paid</a>
 	    <form name="paid" method="POST" action="<?php echo $_SERVER['SCRIPT_NAME'];?>">
 	      <input type=hidden name="filter_paid" value="1"></form>
+	  </li>
+	  <li>
 	  </li>
 	  <!--<li>Total: </li>-->
 	  <li>Finished: <?php echo $num_finished;?></li>

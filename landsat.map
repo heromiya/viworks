@@ -45,162 +45,6 @@ END
   END
 
   LAYER
-    NAME 'vi_urban_polygon'
-    TYPE POLYGON
-    STATUS OFF
-    EXTENT -180 -90 180 90
-    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
-    CONNECTIONTYPE postgis
-    DATA "the_geom from dawei_viworks"
-    OPACITY 50
-    FILTERITEM vi
-    FILTER (vi='urban')
-    CLASSITEM vi
-    CLASS
-      STYLE
-        COLOR 102 102 255
-	OUTLINECOLOR 0 0 255
-      END
-    END
-  END
-
-  LAYER
-    NAME 'vi_urban_line'
-    TYPE LINE
-    STATUS OFF
-    EXTENT -180 -90 180 90
-    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
-    CONNECTIONTYPE postgis
-    DATA "the_geom from dawei_viworks"
-    OPACITY 50
-    FILTERITEM vi
-    FILTER (vi='urban')
-    CLASSITEM vi
-    CLASS
-      STYLE
-		OUTLINECOLOR 0 0 255
-      END
-    END
-  END
-
-  LAYER
-    NAME 'vi_unknown_polygon'
-    TYPE POLYGON
-    STATUS OFF
-    EXTENT -180 -90 180 90
-    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
-    CONNECTIONTYPE postgis
-    DATA "the_geom from dawei_viworks"
-    OPACITY 50
-    FILTERITEM vi
-    FILTER (vi='unknown')
-    CLASSITEM vi
-    CLASS
-      STYLE
-        COLOR 255 255 102
-	OUTLINECOLOR 255 102 0
-      END
-    END
-  END
-
-  LAYER
-    NAME 'vi_unknown_line'
-    TYPE LINE
-    STATUS OFF
-    EXTENT -180 -90 180 90
-    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
-    CONNECTIONTYPE postgis
-    DATA "the_geom from dawei_viworks"
-    OPACITY 50
-    FILTERITEM vi
-    FILTER (vi='unknown')
-    CLASSITEM vi
-    CLASS
-      STYLE
-		OUTLINECOLOR 255 102 0
-      END
-    END
-  END
-
-   LAYER
-    NAME 'vi_revise_polygon'
-    TYPE POLYGON
-    STATUS OFF
-    EXTENT -180 -90 180 90
-    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
-    CONNECTIONTYPE postgis
-    DATA "the_geom from dawei_viworks"
-    OPACITY 50
-    FILTERITEM vi
-    FILTER (vi='revise')
-    CLASSITEM vi
-    CLASS
-      STYLE
-        COLOR 255 255 153
-		OUTLINECOLOR 255 255 0
-      END
-    END
-  END
-
-  LAYER
-    NAME 'vi_revise_line'
-    TYPE LINE
-    STATUS OFF
-    EXTENT -180 -90 180 90
-    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
-    CONNECTIONTYPE postgis
-    DATA "the_geom from dawei_viworks"
-    OPACITY 50
-    FILTERITEM vi
-    FILTER (vi='revise')
-    CLASSITEM vi
-    CLASS
-      STYLE
-		OUTLINECOLOR 255 255 0
-	  END
-    END
-  END
-
-   LAYER
-    NAME 'vi_pending_polygon'
-    TYPE POLYGON
-    STATUS OFF
-    EXTENT -180 -90 180 90
-    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
-    CONNECTIONTYPE postgis
-    DATA "the_geom from dawei_viworks"
-    OPACITY 50
-    FILTERITEM vi
-    FILTER (vi='pending')
-    CLASSITEM vi
-    CLASS
-      STYLE
-        COLOR 204 102 153
-		OUTLINECOLOR 204 0 102
-      END
-    END
-  END
-
-  LAYER
-    NAME 'vi_pending_line'
-    TYPE LINE
-    STATUS OFF
-    EXTENT -180 -90 180 90
-    CONNECTION 'user=heromiya dbname=crowdsourcing host=localhost port=5432'
-    CONNECTIONTYPE postgis
-    DATA "the_geom from dawei_viworks"
-    OPACITY 50
-    FILTERITEM vi
-    FILTER (vi='pending')
-    CLASSITEM vi
-    CLASS
-      STYLE
-		OUTLINECOLOR 204 0 102
-	  END
-    END
-  END
-
-  LAYER
     NAME 'bg_aster4practice'
     TYPE RASTER
     DUMP true
@@ -740,14 +584,14 @@ END
   END
 
   LAYER
-    NAME 'LM11400501972356AAA04'
+    NAME 'LE71270482000357SGS00'
     TYPE RASTER
     DUMP true
     EXTENT -180 -90 180 90
     MAXSCALE 1000000
-    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LM11400501972356AAA04.654.epsg4326.tif"
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LE71270482000357SGS00.432.epsg4326.tif"
     METADATA
-      'ows_title' 'LM11400501972356AAA04'
+      'ows_title' 'LE71270482000357SGS00'
     END
     STATUS OFF
     PROJECTION
@@ -760,14 +604,14 @@ END
   END
 
   LAYER
-    NAME 'LM11400501972356AAA04_as'
+    NAME 'LE71270482000357SGS00_as'
     TYPE RASTER
     DUMP true
     EXTENT -180 -90 180 90
     MAXSCALE 1000000
-    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LM11400501972356AAA04.654.epsg4326.tif"
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LE71270482000357SGS00.432.epsg4326.tif"
     METADATA
-      'ows_title' 'LM11400501972356AAA04'
+      'ows_title' 'LE71270482000357SGS00'
     END
     STATUS OFF
     PROJECTION
@@ -955,6 +799,49 @@ END
   END
 
   LAYER
+    NAME 'LT51270482006349BKT00'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51270482006349BKT00.432.epsg4326.tif"
+    METADATA
+      'ows_title' 'LT51270482006349BKT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+  END
+
+  LAYER
+    NAME 'LT51270482006349BKT00_as'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51270482006349BKT00.432.epsg4326.tif"
+    METADATA
+      'ows_title' 'LT51270482006349BKT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+    PROCESSING "SCALE=AUTO"
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    PROCESSING "OVERSAMPLE_RATIO=1.5"
+  END
+
+  LAYER
     NAME 'LM21400501978351AAA02'
     TYPE RASTER
     DUMP true
@@ -1026,6 +913,92 @@ END
     DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LM31400501978306AAA02.654.epsg4326.tif"
     METADATA
       'ows_title' 'LM31400501978306AAA02'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+    PROCESSING "SCALE=AUTO"
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    PROCESSING "OVERSAMPLE_RATIO=1.5"
+  END
+
+  LAYER
+    NAME 'LT51270482009005BKT00'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51270482009005BKT00.432.epsg4326.tif"
+    METADATA
+      'ows_title' 'LT51270482009005BKT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+  END
+
+  LAYER
+    NAME 'LT51270482009005BKT00_as'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51270482009005BKT00.432.epsg4326.tif"
+    METADATA
+      'ows_title' 'LT51270482009005BKT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+    PROCESSING "SCALE=AUTO"
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    PROCESSING "OVERSAMPLE_RATIO=1.5"
+  END
+
+  LAYER
+    NAME 'LM11360481972352AAA04'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LM11360481972352AAA04.654.epsg4326.tif"
+    METADATA
+      'ows_title' 'LM11360481972352AAA04'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+  END
+
+  LAYER
+    NAME 'LM11360481972352AAA04_as'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LM11360481972352AAA04.654.epsg4326.tif"
+    METADATA
+      'ows_title' 'LM11360481972352AAA04'
     END
     STATUS OFF
     PROJECTION
@@ -1198,6 +1171,264 @@ END
     DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51310502009337BKT00.432.epsg4326.tif"
     METADATA
       'ows_title' 'LT51310502009337BKT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+    PROCESSING "SCALE=AUTO"
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    PROCESSING "OVERSAMPLE_RATIO=1.5"
+  END
+
+  LAYER
+    NAME 'LT51270481994028BKT00'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51270481994028BKT00.432.epsg4326.tif"
+    METADATA
+      'ows_title' 'LT51270481994028BKT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+  END
+
+  LAYER
+    NAME 'LT51270481994028BKT00_as'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51270481994028BKT00.432.epsg4326.tif"
+    METADATA
+      'ows_title' 'LT51270481994028BKT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+    PROCESSING "SCALE=AUTO"
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    PROCESSING "OVERSAMPLE_RATIO=1.5"
+  END
+
+  LAYER
+    NAME 'LT51270481996002CLT00'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51270481996002CLT00.432.epsg4326.tif"
+    METADATA
+      'ows_title' 'LT51270481996002CLT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+  END
+
+  LAYER
+    NAME 'LT51270481996002CLT00_as'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51270481996002CLT00.432.epsg4326.tif"
+    METADATA
+      'ows_title' 'LT51270481996002CLT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+    PROCESSING "SCALE=AUTO"
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    PROCESSING "OVERSAMPLE_RATIO=1.5"
+  END
+
+  LAYER
+    NAME 'LT51270482006029BKT00'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51270482006029BKT00.432.epsg4326.tif"
+    METADATA
+      'ows_title' 'LT51270482006029BKT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+  END
+
+  LAYER
+    NAME 'LT51270482006029BKT00_as'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LT51270482006029BKT00.432.epsg4326.tif"
+    METADATA
+      'ows_title' 'LT51270482006029BKT00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+    PROCESSING "SCALE=AUTO"
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    PROCESSING "OVERSAMPLE_RATIO=1.5"
+  END
+
+  LAYER
+    NAME 'LM11400501972356AAA04'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LM11400501972356AAA04.654.epsg4326.tif"
+    METADATA
+      'ows_title' 'LM11400501972356AAA04'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+  END
+
+  LAYER
+    NAME 'LM11400501972356AAA04_as'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LM11400501972356AAA04.654.epsg4326.tif"
+    METADATA
+      'ows_title' 'LM11400501972356AAA04'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+    PROCESSING "SCALE=AUTO"
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    PROCESSING "OVERSAMPLE_RATIO=1.5"
+  END
+
+  LAYER
+    NAME 'LM21360481975363GDS03'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LM21360481975363GDS03.654.epsg4326.tif"
+    METADATA
+      'ows_title' 'LM21360481975363GDS03'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+  END
+
+  LAYER
+    NAME 'LM21360481975363GDS03_as'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LM21360481975363GDS03.654.epsg4326.tif"
+    METADATA
+      'ows_title' 'LM21360481975363GDS03'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+    PROCESSING "SCALE=AUTO"
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    PROCESSING "OVERSAMPLE_RATIO=1.5"
+  END
+
+  LAYER
+    NAME 'LC81270482013336LGN00'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LC81270482013336LGN00.543.epsg4326.tif"
+    METADATA
+      'ows_title' 'LC81270482013336LGN00'
+    END
+    STATUS OFF
+    PROJECTION
+    'proj=longlat'
+    'ellps=WGS84'
+    'datum=WGS84'
+    'no_defs'
+    END
+    OFFSITE  0 0 0
+  END
+
+  LAYER
+    NAME 'LC81270482013336LGN00_as'
+    TYPE RASTER
+    DUMP true
+    EXTENT -180 -90 180 90
+    MAXSCALE 1000000
+    DATA "/mnt/lv2/kimijima-landsat/fcc.epsg4326/LC81270482013336LGN00.543.epsg4326.tif"
+    METADATA
+      'ows_title' 'LC81270482013336LGN00'
     END
     STATUS OFF
     PROJECTION
