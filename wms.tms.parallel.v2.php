@@ -45,14 +45,14 @@ if (!($rs = pg_exec($sql))) { die; }
   <head>
     <script type="text/javascript">
       <!--
-      username = '<?php print $username?>';
-      qid='<?php print $qid?>';
-      // -->
+	  username = '<?php print $username?>';
+	  qid='<?php print $qid?>';
+	  // -->
     </script>
     <script type="text/javascript" src="../OpenLayers-2.12/lib/OpenLayers.js"></script> 
     <script type="text/javascript" src="../OpenLayers-2.12/lib/deprecated.js"></script>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/dojo/1.7.1/dojo/dojo.js" type="text/javascript" djConfig="parseOnLoad: true"></script>
+    <script src="dojo-release-1.10.1/dojo/dojo.js" type="text/javascript" djConfig="parseOnLoad: true"></script>
     <script type="text/javascript" src="proj4js/lib/proj4js-compressed.js"></script>
     <script type="text/javascript" src="misc.openlayers.v2.js"></script>
     <script type="text/javascript" src="basemaps.openlayers.js"></script>
@@ -61,14 +61,14 @@ if (!($rs = pg_exec($sql))) { die; }
     <script type="text/javascript" src="wms.tms.parallel.ui.js"></script>
     <link href="style.openlayers.css" rel="stylesheet" type="text/css" />
     <style type="text/css">
-      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.7.1/dojo/resources/dojo.css";
-      @import "http://ajax.googleapis.com/ajax/libs/dojo/1.7.1/dijit/themes/tundra/tundra.css";
-    div.olLayerGoogleCopyright,
-    div.olLayerGooglePoweredBy
-{
-display: none !important;
-}   </style>
-<title>Urban Mapping Web-GIS</title>
+      @import "dojo-release-1.10.1/dojo/resources/dojo.css";
+      @import "dojo-release-1.10.1/dijit/themes/tundra/tundra.css";
+      div.olLayerGoogleCopyright,
+      div.olLayerGooglePoweredBy
+      {
+      display: none !important;
+      }   </style>
+    <title>Urban Mapping Web-GIS</title>
   </head>
   <body onload="init(<?php printf('%lf,%lf,%lf,%lf,\'%s\',%lf,%lf,%lf,%lf,%d,%s,\'%s\'',$lonmin,$latmin,$lonmax,$latmax,$username,$zlonmin,$zlatmin,$zlonmax,$zlatmax,$invmap,$proj1,$refimage_gid)?>)" class="tundra">
     <table width="100%" height="100%" cellpadding="0" cellspacing="0" >

@@ -6,7 +6,7 @@ $unapprove=$_POST['unapprove'];
 $paid=$_POST['paid'];
 $unpaid=$_POST['unpaid'];
 $reassign=$_POST['reassign'];
-$satellite_gid=$_POST['satellite_gid'];
+$searchkeyword=$_POST['searchkeyword'];
 $page=$_GET['page'];
 if (is_null($page)) {
 $page = 1;
@@ -67,143 +67,140 @@ if ($filter_paid==1){
 	$whereclause="where paid_timestamp is not null and paid_timestamp != '9999-12-31 00:00:00'";
 }
 
-if (!is_null($satellite_gid)){
+if (!is_null($searchkeyword)){
    if(is_null($whereclause)){
-   		   $whereclause="where t.gid like '%" . $satellite_gid . "'";
+   		   $whereclause="where dawei_assignments_approval.gid like '%" . $searchkeyword . "%'";
    }else{
-   $whereclause=$whereclause . "and t.gid like '%" . $satellite_gid . "'";
+   $whereclause=$whereclause . "and dawei_assignments_approval.gid like '%" . $searchkeyword . "%'";
 }
 }
 
-$sql = "select distinct *
-    ,t.gid
-    ,t.username
-    ,t.end_ts
-    ,t.start_ts
+$sql = "
+CREATE OR REPLACE VIEW dawei_assignments_approval AS
+SELECT DISTINCT dawei_assignment.username AS username ,
+       dawei_assignment.gid ,
+       dawei_assignment.start_ts ,
+       dawei_assignment.end_ts ,
+       paid_timestamp ,
+       dawei_assignment.refimage_gid ,
+       ST_XMax(ST_Transform(the_geom,4326)) AS lonmax ,
+       ST_XMin(ST_Transform(the_geom,4326)) AS lonmin ,
+       ST_YMax(ST_Transform(the_geom,4326)) AS latmax ,
+       ST_YMin(ST_Transform(the_geom,4326)) AS latmin ,
+       ARRAY_TO_STRING( ARRAY
+                         ( SELECT dawei_approval.username || ' ' || date_part('year',dawei_approval.insert_timestamp) || '-' || date_part('month',dawei_approval.insert_timestamp) || '-' || date_part('day',dawei_approval.insert_timestamp)
+                          FROM dawei_approval
+                          WHERE dawei_approval.qid=dawei_assignment.gid
+                            AND dawei_approval.insert_timestamp > '2013-11-10 00:00:00'
+                          ORDER BY dawei_approval.username ), '<br>' ) AS approver ,
+       seq
+FROM dawei_assignment ,
+     dawei_target
+WHERE dawei_assignment.gid = dawei_target.tilex || '-' || dawei_target.tiley || '-' || dawei_target.refimage_gid
+  AND (dawei_assignment.end_ts > '2013-11-10 00:00:00'
+       OR dawei_assignment.end_ts IS NULL);
+
+select distinct *
+    ,dawei_assignments_approval.gid
+    ,dawei_assignments_approval.username
+    ,dawei_assignments_approval.end_ts
+    ,dawei_assignments_approval.start_ts
     ,sum as worktime
     ,extract(epoch from sum) as worktime_sec
     ,avg
     ,stddev
     ,nfeature
-from (
-    select 
-	dawei_assignment.username as username
-        , dawei_assignment.gid
-        , dawei_assignment.start_ts
-        , dawei_assignment.end_ts
-        ,paid_timestamp
-        ,dawei_assignment.refimage_gid
-        ,ST_XMax(ST_Transform(the_geom,4326)) as lonmax
-        ,ST_XMin(ST_Transform(the_geom,4326)) as lonmin
-        ,ST_YMax(ST_Transform(the_geom,4326)) as latmax
-        ,ST_YMin(ST_Transform(the_geom,4326)) as latmin
-        ,ARRAY_TO_STRING(
-            ARRAY(
-            SELECT dawei_approval.username
-                || ' '
-                || date_part('year',dawei_approval.insert_timestamp)
-                || '-'
-                || date_part('month',dawei_approval.insert_timestamp)
-                || '-'
-                || date_part('day',dawei_approval.insert_timestamp)
-            FROM dawei_approval
-            WHERE dawei_approval.qid=dawei_assignment.gid
-                and dawei_approval.insert_timestamp > '2013-11-10 00:00:00'
-            ORDER BY dawei_approval.username
-                ), '<br>'
-            ) AS approver
-        ,seq
-    from dawei_assignment
-	,dawei_target 
-    where dawei_assignment.gid = dawei_target.tilex || '-' || dawei_target.tiley || '-' || dawei_target.refimage_gid
-        and (dawei_assignment.end_ts > '2013-11-10 00:00:00' or dawei_assignment.end_ts is null)
-	) as t
-    left join dawei_worktime_by_region on t.gid = dawei_worktime_by_region.gid
+from dawei_assignments_approval
+    left join dawei_worktime_by_region on dawei_assignments_approval.gid = dawei_worktime_by_region.gid
     ".$whereclause."
-order by ".$sort_str." t.end_ts,t.start_ts OFFSET ". ($page-1) * 100 ." limit 100;";
+order by ".$sort_str." dawei_assignments_approval.end_ts,dawei_assignments_approval.start_ts OFFSET ". ($page-1) * 100 ." limit 100;";
 
-	if (!($rs = pg_exec($sql))) {die;}
-	$nrow = pg_num_rows($rs);
-	$html = $html . "";
-	$num_approve = 0;
-	$num_finished = 0;
-	for ($i = 0; $i < $nrow; $i++) {
-		$row = pg_fetch_array($rs, $i);
-		$lonmin=$row['lonmin'];
-		$latmin=$row['latmin'];
-		$lonmax=$row['lonmax'];
-		$latmax=$row['latmax'];
-		$paid_timestamp=$row['paid_timestamp'];
-		$refimage_gid=$row['refimage_gid'];
-		$pixelsize=0.0001388888888888888888888;
-		$thumbsize=96;
-		$wmsthumb='http://'.$WEBHOST.'/cgi-bin/mapserv?map=/var/www/dawei/landsat.map&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS='.$refimage_gid.'&WIDTH='.$thumbsize.'&HEIGHT='.$thumbsize.'&SRS=EPSG:4326&FORMAT=JPEG&BBOX=';
-		$img='<img height="'.$thumbsize.'" width="'.$thumbsize.'" src="'.$wmsthumb.$lonmin.','.$latmin.','.$lonmax.','.$latmax.'">';
-		$tiles='<a href="javascript:void(0);" onClick="writemapthumb('.$thumbsize.','.$lonmin.','.$latmin.','.$lonmax.','.$latmax.','.$i.',\''.$refimage_gid.'\');" id="thumb'.$i.'">Thumbnail</a>';
+if (!($rs = pg_exec($sql))) {die;}
+$nrow = pg_num_rows($rs);
+$html = $html . "";
+$num_approve = 0;
+$num_finished = 0;
+for ($i = 0; $i < $nrow; $i++) {
+    $row = pg_fetch_array($rs, $i);
+    $lonmin=$row['lonmin'];
+    $latmin=$row['latmin'];
+    $lonmax=$row['lonmax'];
+    $latmax=$row['latmax'];
+    $paid_timestamp=$row['paid_timestamp'];
+    $refimage_gid=$row['refimage_gid'];
+    $pixelsize=0.0001388888888888888888888;
+    $thumbsize=96;
+    $wmsthumb='http://'.$WEBHOST.'/cgi-bin/mapserv?map=/var/www/dawei/landsat.map&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS='.$refimage_gid.'&WIDTH='.$thumbsize.'&HEIGHT='.$thumbsize.'&SRS=EPSG:4326&FORMAT=JPEG&BBOX=';
+    $img='<img height="'.$thumbsize.'" width="'.$thumbsize.'" src="'.$wmsthumb.$lonmin.','.$latmin.','.$lonmax.','.$latmax.'">';
+    $tiles='<a href="javascript:void(0);" onClick="writemapthumb('.$thumbsize.','.$lonmin.','.$latmin.','.$lonmax.','.$latmax.','.$i.',\''.$refimage_gid.'\');" id="thumb'.$i.'">Thumbnail</a>';
 
-	if(preg_match('/.*'.$username.'.*/',$row["approver"])){
-		$approvestr = "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."'><input type='hidden' name='unapprove' value='1'><input type='hidden' name='gid' value='".$row["gid"]."'><input name='submit_unapproval' type='submit' value='Cancel approval'></form></td>";
-	    	}else{
-		$approvestr = "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."'><input type='hidden' name='approve' value='1'><input type='hidden' name='gid' value='".$row["gid"]."'>"
-		    ."<input name='submit_approval' type='submit' value='a'>"
-		    ."</form></td>";   
-	}
-	if(preg_match('/.*kimijimasatomi.*/',$row["approver"])) $num_approve++;
-       	if( ! is_null($row["end_ts"]) && $row["end_ts"] != '9999-12-31 00:00:00') $num_finished++;
+    if(preg_match('/.*'.$username.'.*/',$row["approver"])){
+	$approvestr = "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."'><input type='hidden' name='unapprove' value='1'><input type='hidden' name='gid' value='".$row["gid"]."'><input name='submit_unapproval' type='submit' value='Cancel approval'></form></td>";
+    }else{
+	$approvestr = "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."'><input type='hidden' name='approve' value='1'><input type='hidden' name='gid' value='".$row["gid"]."'>"
+	    ."<input name='submit_approval' type='submit' value='a'>"
+	    ."</form></td>";   
+    }
+    //    if(preg_match('/.*kimijimasatomi.*/',$row["approver"])) $num_approve++;
+    if( ! is_null($row["end_ts"]) && $row["end_ts"] != '9999-12-31 00:00:00') $num_finished++;
 
-	$paidstr = '';
-	if( is_null($paid_timestamp) || $paid_timestamp == '9999-12-31 00:00:00') {
-		$paidstr = "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."'>"
-		. "<input type='hidden' name='paid' value='1'>"
-		. "<input type='hidden' name='gid' value='".$row["gid"]."'>"
-		. "<input type='hidden' name='filter_finished' value='".$filter_finished."'>"
-		. "<input type='hidden' name='filter_approved' value='".$filter_approved."'>"
-		. "<input type='hidden' name='filter_paid' value='".$filter_paid."'>"
-		. "<input name='submit_paid' type='submit' value='paid'>"
-		. "</form></td>";
-	}else{
-		$paidstr = "<td>Paid<br><form method='post' action='".$_SERVER['SCRIPT_NAME']."'>"
-		. "<input type='hidden' name='unpaid' value='1'>"
-		. "<input type='hidden' name='gid' value='".$row["gid"]."'>"
-		. "<input type='hidden' name='filter_finished' value='".$filter_finished."'>"
-		. "<input type='hidden' name='filter_approved' value='".$filter_approved."'>"
-		. "<input type='hidden' name='filter_paid' value='".$filter_paid."'>"
-		. "<input name='submit_unpaid' type='submit' value='Mark as unpaid'>"
-		. "</form></td>";
-	}
-
-	$html = $html . "<tr align='center'><td>" . $row["username"] . "</td>"
-	    . "<td>" . $row["gid"] . "</td>"
-	    . "<td>" . preg_replace('/\.[0-9]*$/','',$row["start_ts"]) . "</td>"
-	    . "<td>" . preg_replace('/\.[0-9]*$/','',$row["end_ts"]) . "</td>"
-	    . "<td>" . preg_replace('/\.[0-9]*$/','',$row["worktime"]) . "</td>"
-	    //. "<td>" . $row["worktime_sec"] . "</td>"
-	    . "<td>" . $row["nfeature"] . "</td>"
-	    . "<td>" . preg_replace('/\.[0-9]*$/','',$row["avg"]) . "</td>"
-	    . "<td>" . preg_replace('/\.[0-9]*$/','',$row["stddev"]) . "</td>"
-	    //. "<td>" . $tiles . "</td>"
-	    . "<td><a href='wms.tms.parallel.v2.php?lonmin=". $row["lonmin"] ."&latmin=". $row["latmin"] ."&lonmax=". $row["lonmax"] ."&latmax=". $row["latmax"] ."&qid=".$row["gid"]."&refimage_gid=".$row["refimage_gid"]."'>Revise</a>" . "</td>"
-	    . "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."'>"
-	    . "<input type='hidden' name='unfinished' value='1'>"
+    $paidstr = '';
+    if( is_null($paid_timestamp) || $paid_timestamp == '9999-12-31 00:00:00') {
+	$paidstr = "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."'>"
+	    . "<input type='hidden' name='paid' value='1'>"
 	    . "<input type='hidden' name='gid' value='".$row["gid"]."'>"
 	    . "<input type='hidden' name='filter_finished' value='".$filter_finished."'>"
 	    . "<input type='hidden' name='filter_approved' value='".$filter_approved."'>"
 	    . "<input type='hidden' name='filter_paid' value='".$filter_paid."'>"
-	    . "<input name='submit_unfinished' type='submit' value='u'>"
-	    . "</form></td>"
-		. $approvestr
-		. "<td>".$row["approver"]."</td>"
-	    //. $paidstr
-		. "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."' onSubmit='return check_reassign()'>"
-		. "<input type='hidden' name='reassign' value='1'>"
-		. "<input type='hidden' name='gid' value='".$row["gid"]."'>"
-		. "<input type='hidden' name='filter_finished' value='".$filter_finished."'>"
-		. "<input type='hidden' name='filter_approved' value='".$filter_approved."'>"
-		. "<input type='hidden' name='filter_paid' value='".$filter_paid."'>"
-	    ."<input name='submit_reassign' type='submit' value='r'>"
-		. "</form></td></tr>"
-	    ;
+	    . "<input name='submit_paid' type='submit' value='paid'>"
+	    . "</form></td>";
+    }else{
+	$paidstr = "<td>Paid<br><form method='post' action='".$_SERVER['SCRIPT_NAME']."'>"
+	    . "<input type='hidden' name='unpaid' value='1'>"
+	    . "<input type='hidden' name='gid' value='".$row["gid"]."'>"
+	    . "<input type='hidden' name='filter_finished' value='".$filter_finished."'>"
+	    . "<input type='hidden' name='filter_approved' value='".$filter_approved."'>"
+	    . "<input type='hidden' name='filter_paid' value='".$filter_paid."'>"
+	    . "<input name='submit_unpaid' type='submit' value='Mark as unpaid'>"
+	    . "</form></td>";
     }
+
+    $html = $html . "<tr align='center'><td>" . $row["username"] . "</td>"
+	. "<td>" . $row["gid"] . "</td>"
+	. "<td>" . preg_replace('/\.[0-9]*$/','',$row["start_ts"]) . "</td>"
+	. "<td>" . preg_replace('/\.[0-9]*$/','',$row["end_ts"]) . "</td>"
+	. "<td>" . preg_replace('/\.[0-9]*$/','',$row["worktime"]) . "</td>"
+	//. "<td>" . $row["worktime_sec"] . "</td>"
+	. "<td>" . $row["nfeature"] . "</td>"
+	. "<td>" . preg_replace('/\.[0-9]*$/','',$row["avg"]) . "</td>"
+	. "<td>" . preg_replace('/\.[0-9]*$/','',$row["stddev"]) . "</td>"
+	//. "<td>" . $tiles . "</td>"
+	. "<td><a href='wms.tms.parallel.v2.php?lonmin=". $row["lonmin"] ."&latmin=". $row["latmin"] ."&lonmax=". $row["lonmax"] ."&latmax=". $row["latmax"] ."&qid=".$row["gid"]."&refimage_gid=".$row["refimage_gid"]."'>Revise</a>" . "</td>"
+	. "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."'>"
+	. "<input type='hidden' name='unfinished' value='1'>"
+	. "<input type='hidden' name='gid' value='".$row["gid"]."'>"
+	. "<input type='hidden' name='filter_finished' value='".$filter_finished."'>"
+	. "<input type='hidden' name='filter_approved' value='".$filter_approved."'>"
+	. "<input type='hidden' name='filter_paid' value='".$filter_paid."'>"
+	. "<input name='submit_unfinished' type='submit' value='u'>"
+	. "</form></td>"
+	. $approvestr
+	. "<td>".$row["approver"]."</td>"
+	//. $paidstr
+	. "<td><form method='post' action='".$_SERVER['SCRIPT_NAME']."' onSubmit='return check_reassign()'>"
+	. "<input type='hidden' name='reassign' value='1'>"
+	. "<input type='hidden' name='gid' value='".$row["gid"]."'>"
+	. "<input type='hidden' name='filter_finished' value='".$filter_finished."'>"
+	. "<input type='hidden' name='filter_approved' value='".$filter_approved."'>"
+	. "<input type='hidden' name='filter_paid' value='".$filter_paid."'>"
+	."<input name='submit_reassign' type='submit' value='r'>"
+	. "</form></td></tr>"
+	;
+}
+if (!($rs = pg_exec("SELECT DISTINCT * FROM dawei_assignments_approval WHERE approver LIKE '%kimijimasatomi%';"))) {die;}
+$num_approve = pg_num_rows($rs);
+if (!($rs = pg_exec("SELECT DISTINCT * FROM dawei_assignment WHERE end_ts IS NOT NULL AND end_ts != '9999-12-31 00:00:00' AND end_ts > '2013-11-10 00:00:00';"))) {die;}
+$num_finished = pg_num_rows($rs);
 ?>
 
 <html>
@@ -308,7 +305,7 @@ a:active { color: #ff0000; }
   <body>
     <div id="container">
       <div id="header">
-	<a href="assignregion.php">Back to assignment</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>?sbu=1">Sort by User name</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>">Sort by Start time and Finished time</a><br>Filter by satellite data granule id<form style="display: inline" name="satellite_gid" method="POST" action="<?php echo $_SERVER['SCRIPT_NAME'];?>"><input type=text name="satellite_gid" /><input type=submit value="filter" />(e.g. LM11400501972356AAA04; to remove filter, click "filter" without any input.)</form>
+	<a href="assignregion.php">Back to assignment</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>?sbu=1">Sort by User name</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>">Sort by Start time and Finished time</a><br>Partial match filter by keywords <form style="display: inline" name="searchkeyword" method="POST" action="<?php echo $_SERVER['SCRIPT_NAME'];?>"><input type=text name="searchkeyword" /><input type=submit value="filter" />(e.g. LM11400501972356AAA04 or 6472-3679; to remove filter, click "filter" without any input.)</form>
 	<br><a href="?page=<?php if($page==1){echo 1;}else{echo $page-1;};?>">prev</a> Page <?php echo $page;?> <a href="?page=<?php echo $page+1;?>">next</a>
       </div>
       <div id="nav">
