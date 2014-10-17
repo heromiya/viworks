@@ -414,7 +414,7 @@ function init(lonmin,latmin,lonmax,latmax,username,zlonmin,zlatmin,zlonmax,zlatm
 	title: "Save",
 	 trigger: function(){
 	     saveStrategy.save();
-	     setTimeout('reload(qid)',2000) 
+	     //setTimeout('reload(qid)',2000) 
 	},
 	displayClass: "olControlSave"
     });
