@@ -94,11 +94,15 @@ SELECT DISTINCT dawei_assignment.username AS username ,
                             AND dawei_approval.insert_timestamp > '2013-11-10 00:00:00'
                           ORDER BY dawei_approval.username ), '<br>' ) AS approver ,
        seq
-FROM dawei_assignment ,
+FROM dawei_assignment
+LEFT JOIN
      dawei_target
-WHERE dawei_assignment.gid = dawei_target.tilex || '-' || dawei_target.tiley || '-' || dawei_target.refimage_gid
+ON
+  dawei_assignment.gid = dawei_target.tilex || '-' || dawei_target.tiley || '-' || dawei_target.refimage_gid
   AND (dawei_assignment.end_ts > '2013-11-10 00:00:00'
-       OR dawei_assignment.end_ts IS NULL);
+       OR dawei_assignment.end_ts IS NULL)
+order by ".$sort_str." dawei_assignment.end_ts,dawei_assignment.start_ts
+ OFFSET ". ($page-1) * 50 ." limit 50;
 
 select distinct *
     ,dawei_assignments_approval.gid
@@ -113,7 +117,7 @@ select distinct *
 from dawei_assignments_approval
     left join dawei_worktime_by_region on dawei_assignments_approval.gid = dawei_worktime_by_region.gid
     ".$whereclause."
-order by ".$sort_str." dawei_assignments_approval.end_ts,dawei_assignments_approval.start_ts OFFSET ". ($page-1) * 50 ." limit 50;";
+;";
 
 if (!($rs = pg_exec($sql))) {die;}
 $nrow = pg_num_rows($rs);
@@ -197,7 +201,7 @@ for ($i = 0; $i < $nrow; $i++) {
 	. "</form></td></tr>"
 	;
 }
-if (!($rs = pg_exec("SELECT DISTINCT * FROM dawei_assignments_approval WHERE approver LIKE '%kimijimasatomi%';"))) {die;}
+if (!($rs = pg_exec("select distinct username,qid from dawei_approval;"))) {die;}
 $num_approve = pg_num_rows($rs);
 if (!($rs = pg_exec("SELECT DISTINCT * FROM dawei_assignment WHERE end_ts IS NOT NULL AND end_ts != '9999-12-31 00:00:00' AND end_ts > '2013-11-10 00:00:00';"))) {die;}
 $num_finished = pg_num_rows($rs);
@@ -225,7 +229,6 @@ function writemapthumb(thumbsize,lonmin,latmin,lonmax,latmax,rn,refimage_gid){
     //wmsthumb='http://guam.csis.u-tokyo.ac.jp/cgi-bin/mapserv?map=/var/www/dawei/landsat.map&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS='+refimage_gid+',vi_urban_polygon,vi_urban_line,vi_unknown_polygon,vi_unknown_line,vi_revise_polygon,vi_revise_line,vi_pending_polygon,vi_pending_line&WIDTH='+thumbsize+'&HEIGHT='+thumbsize+'&SRS=EPSG:4326&FORMAT=JPEG&BBOX=';
     wmsthumb='http://guam.csis.u-tokyo.ac.jp/cgi-bin/mapserv?map=/var/www/dawei/landsat.map&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS='+refimage_gid+'&WIDTH='+thumbsize+'&HEIGHT='+thumbsize+'&SRS=EPSG:4326&FORMAT=JPEG&BBOX=';
     img='<img height="'+thumbsize+'" width="'+thumbsize+'" src="'+wmsthumb+lonmin+','+latmin+','+lonmax+','+latmax+'">';
-    //    document.thumb.src=wmsthumb+lonmin+','+latmin+','+lonmax+','+latmax;
     document.getElementById('thumb'+rn).innerHTML = img;
 }
 
@@ -242,7 +245,6 @@ td.item_header {
 th {
      font-size:0.5em;
      }
-/* --- 全体の背景・テキスト --- */
 body {
        margin: 0;
        padding: 0;
@@ -272,6 +274,9 @@ a:active { color: #ff0000; }
        float: left;
        width: 120px; /* サイドバーの幅 */
        }
+#nav ul li {
+display: inline;
+}
 #content {
            float: left;
            //width: 80%; /* メインカラムの幅 */
@@ -306,30 +311,17 @@ a:active { color: #ff0000; }
     <div id="container">
       <div id="header">
 	<a href="assignregion.php">Back to assignment</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>?sbu=1">Sort by User name</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>">Sort by Start time and Finished time</a><br>Partial match filter by keywords <form style="display: inline" name="searchkeyword" method="POST" action="<?php echo $_SERVER['SCRIPT_NAME'];?>"><input type=text name="searchkeyword" /><input type=submit value="filter" />(e.g. LM11400501972356AAA04 or 6472-3679; to remove filter, click "filter" without any input.)</form>
-	<br><a href="?page=<?php if($page==1){echo 1;}else{echo $page-1;};?>">prev</a> Page <?php echo $page;?> <a href="?page=<?php echo $page+1;?>">next</a>
+	<br><a href="?page=<?php if($page==1){echo 1;}else{echo $page-1;};?>">prev</a> Page <?php echo $page;?> <a href="?page=<?php echo $page+1;?>">next</a>	<br> 
+	<a href="<?php echo $_SERVER['SCRIPT_NAME'];?>">All</a> | <a href="" onclick="document.finished.submit();return false;">Finished</a>
+	<form name="finished" method="POST" style="display: inline;" action="<?php echo $_SERVER['SCRIPT_NAME'];?>"><input type=hidden name="filter_finished" value="1"></form>|
+	<a href="" onclick="document.approved.submit();return false;">Approved</a>
+	<form name="approved" method="POST" style="display: inline;" action="<?php echo $_SERVER['SCRIPT_NAME'];?>"><input type=hidden name="filter_approved" value="1"></form>|
+	<a href="" onclick="document.paid.submit();return false;">Paid</a>
+	<form name="paid" method="POST" style="display: inline;" action="<?php echo $_SERVER['SCRIPT_NAME'];?>"><input type=hidden name="filter_paid" value="1"></form>
+
       </div>
-      <div id="nav">
-	<ul>
-	  <li><a href="<?php echo $_SERVER['SCRIPT_NAME'];?>">All</a></li>
-	  <li><a href="" onclick="document.finished.submit();return false;">Finished</a>
-	    <form name="finished" method="POST" action="<?php echo $_SERVER['SCRIPT_NAME'];?>">
-	      <input type=hidden name="filter_finished" value="1">
-	    </form>
-	  </li>
-	  <li><a href="" onclick="document.approved.submit();return false;">Approved</a>
-	    <form name="approved" method="POST" action="<?php echo $_SERVER['SCRIPT_NAME'];?>">
-	      <input type=hidden name="filter_approved" value="1"></form>
-	  </li>
-	  <li><a href="" onclick="document.paid.submit();return false;">Paid</a>
-	    <form name="paid" method="POST" action="<?php echo $_SERVER['SCRIPT_NAME'];?>">
-	      <input type=hidden name="filter_paid" value="1"></form>
-	  </li>
-	  <li>
-	  </li>
-	  <!--<li>Total: </li>-->
-	  <li>Finished: <?php echo $num_finished;?></li>
-	  <li>Approved: <?php echo $num_approve;?></li>
-	</ul>
+      <div>
+	  Finished: <?php echo $num_finished;?> | Approved: <?php echo $num_approve;?>
       </div>
       <div id="content">
 	<!--<table border='1' style='border-width: thin; border-style: solid; border-collapse: collapse'>-->
