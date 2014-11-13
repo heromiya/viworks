@@ -226,7 +226,6 @@ $num_finished = pg_num_rows($rs);
     	    }
 	}
 function writemapthumb(thumbsize,lonmin,latmin,lonmax,latmax,rn,refimage_gid){
-    //wmsthumb='http://guam.csis.u-tokyo.ac.jp/cgi-bin/mapserv?map=/var/www/dawei/landsat.map&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS='+refimage_gid+',vi_urban_polygon,vi_urban_line,vi_unknown_polygon,vi_unknown_line,vi_revise_polygon,vi_revise_line,vi_pending_polygon,vi_pending_line&WIDTH='+thumbsize+'&HEIGHT='+thumbsize+'&SRS=EPSG:4326&FORMAT=JPEG&BBOX=';
     wmsthumb='http://guam.csis.u-tokyo.ac.jp/cgi-bin/mapserv?map=/var/www/dawei/landsat.map&SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS='+refimage_gid+'&WIDTH='+thumbsize+'&HEIGHT='+thumbsize+'&SRS=EPSG:4326&FORMAT=JPEG&BBOX=';
     img='<img height="'+thumbsize+'" width="'+thumbsize+'" src="'+wmsthumb+lonmin+','+latmin+','+lonmax+','+latmax+'">';
     document.getElementById('thumb'+rn).innerHTML = img;
