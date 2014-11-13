@@ -5,6 +5,10 @@ $finished=$_POST['finished'];
 $approve=$_POST['approve'];
 $unapprove=$_POST['unapprove'];
 $gid=$_POST['gid'];
+$page=$_GET['page'];
+if (is_null($page)) {
+$page = 1;
+}
 if(isset($_GET['sbu'])) $sort_str = ",username";
 
 if ($unfinished == 1) {
@@ -52,8 +56,8 @@ $sql = sprintf("select distinct username
                 where end_ts is not null 
                   and end_ts < '2100-01-01'
 		  and dawei_assignment.username = '" . $username . "'
-                order by end_ts desc
-				".$sort_str."
+                order by end_ts desc ".$sort_str."
+ OFFSET ". ($page-1) * 50 ." limit 50;
 				;");
   if (!($rs = pg_exec($sql))) {
     die;
@@ -201,7 +205,7 @@ th {
 </style>
 <body>
 <a href="assignregion.php">Back to assignment</a>
-<h3>Finished regions</h3>
+<h3>Finished regions</h3><a href="?page=<?php if($page==1){echo 1;}else{echo $page-1;};?>">prev</a> Page <?php echo $page;?> <a href="?page=<?php echo $page+1;?>">next</a>
 <?php echo $html_finished ?>
 <h3>Regions marked as unfinished</h3>
 <?php echo $html_unfinished ?>

@@ -58,7 +58,7 @@ if ($unpaid == 1) {
 }
 
 if ($filter_finished==1){
-	$whereclause="where t.end_ts is not null and t.end_ts != '9999-12-31' and t.start_ts is not null and approver !~ '.*kimijimasatomi.*'";
+	$whereclause="where end_ts is not null and end_ts != '9999-12-31' and start_ts is not null and ARRAY_TO_STRING( ARRAY ( SELECT dawei_approval.username || ' ' || date_part('year',dawei_approval.insert_timestamp) || '-' || date_part('month',dawei_approval.insert_timestamp) || '-' || date_part('day',dawei_approval.insert_timestamp) FROM dawei_approval WHERE dawei_approval.qid=dawei_assignment.gid AND dawei_approval.insert_timestamp > '2013-11-10 00:00:00' ORDER BY dawei_approval.username ), '<br>' ) !~ '.*kimijimasatomi.*'";
 }
 if ($filter_approved==1){
 	$whereclause="where approver ~ '.*kimijimasatomi.*' and (paid_timestamp is null or paid_timestamp = '9999-12-31 00:00:00')";
@@ -69,9 +69,9 @@ if ($filter_paid==1){
 
 if (!is_null($searchkeyword)){
    if(is_null($whereclause)){
-   		   $whereclause="where dawei_assignments_approval.gid like '%" . $searchkeyword . "%'";
+   		   $whereclause="where dawei_assignment.gid like '%" . $searchkeyword . "%'";
    }else{
-   $whereclause=$whereclause . "and dawei_assignments_approval.gid like '%" . $searchkeyword . "%'";
+   $whereclause=$whereclause . "and dawei_assignment.gid like '%" . $searchkeyword . "%'";
 }
 }
 
@@ -101,6 +101,7 @@ ON
   dawei_assignment.gid = dawei_target.tilex || '-' || dawei_target.tiley || '-' || dawei_target.refimage_gid
   AND (dawei_assignment.end_ts > '2013-11-10 00:00:00'
        OR dawei_assignment.end_ts IS NULL)
+    ".$whereclause."
 order by ".$sort_str." dawei_assignment.end_ts,dawei_assignment.start_ts
  OFFSET ". ($page-1) * 50 ." limit 50;
 
@@ -116,7 +117,6 @@ select distinct *
     ,nfeature
 from dawei_assignments_approval
     left join dawei_worktime_by_region on dawei_assignments_approval.gid = dawei_worktime_by_region.gid
-    ".$whereclause."
 ;";
 
 if (!($rs = pg_exec($sql))) {die;}
@@ -201,9 +201,9 @@ for ($i = 0; $i < $nrow; $i++) {
 	. "</form></td></tr>"
 	;
 }
-if (!($rs = pg_exec("select distinct username,qid from dawei_approval;"))) {die;}
+if (!($rs = pg_exec("select distinct username,qid from dawei_approval where username = 'kimijimasatomi';"))) {die;}
 $num_approve = pg_num_rows($rs);
-if (!($rs = pg_exec("SELECT DISTINCT * FROM dawei_assignment WHERE end_ts IS NOT NULL AND end_ts != '9999-12-31 00:00:00' AND end_ts > '2013-11-10 00:00:00';"))) {die;}
+if (!($rs = pg_exec("SELECT DISTINCT username, end_ts, gid FROM dawei_assignment WHERE end_ts IS NOT NULL AND end_ts != '9999-12-31 00:00:00';"))) {die;}
 $num_finished = pg_num_rows($rs);
 ?>
 
@@ -260,8 +260,7 @@ a:visited { color: #800080; }
 a:hover { color: #ff0000; }
 a:active { color: #ff0000; }
 #container {
-             //width: 1200px; /* ページの幅 */
-             margin: 0 auto; /* センタリング */
+             margin: 0 auto;
              background-color: #ffffff; /* メインカラムの背景色 */
              border-left: 1px #c0c0c0 solid; /* 左の境界線 */
              border-right: 1px #c0c0c0 solid; /* 右の境界線 */
@@ -278,7 +277,6 @@ display: inline;
 }
 #content {
            float: left;
-           //width: 80%; /* メインカラムの幅 */
            }
 #footer {
           clear: left; /* フロートのクリア */
@@ -310,7 +308,7 @@ display: inline;
     <div id="container">
       <div id="header">
 	<a href="assignregion.php">Back to assignment</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>?sbu=1">Sort by User name</a> | <a href="<?php echo $_SERVER['SCRIPT_NAME'];?>">Sort by Start time and Finished time</a><br>Partial match filter by keywords <form style="display: inline" name="searchkeyword" method="POST" action="<?php echo $_SERVER['SCRIPT_NAME'];?>"><input type=text name="searchkeyword" /><input type=submit value="filter" />(e.g. LM11400501972356AAA04 or 6472-3679; to remove filter, click "filter" without any input.)</form>
-	<br><a href="?page=<?php if($page==1){echo 1;}else{echo $page-1;};?>">prev</a> Page <?php echo $page;?> <a href="?page=<?php echo $page+1;?>">next</a>	<br> 
+	<br><a href="?page=<?php if($page==1){echo 1;}else{echo $page-1;};?>">prev</a> Page <?php echo $page;?> <a href="?page=<?php echo $page+1;?>">next</a><br> 
 	<a href="<?php echo $_SERVER['SCRIPT_NAME'];?>">All</a> | <a href="" onclick="document.finished.submit();return false;">Finished</a>
 	<form name="finished" method="POST" style="display: inline;" action="<?php echo $_SERVER['SCRIPT_NAME'];?>"><input type=hidden name="filter_finished" value="1"></form>|
 	<a href="" onclick="document.approved.submit();return false;">Approved</a>
