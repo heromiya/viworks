@@ -113,7 +113,7 @@ select distinct *
 from dawei_assignments_approval
     left join dawei_worktime_by_region on dawei_assignments_approval.gid = dawei_worktime_by_region.gid
     ".$whereclause."
-order by ".$sort_str." dawei_assignments_approval.end_ts,dawei_assignments_approval.start_ts OFFSET ". ($page-1) * 100 ." limit 100;";
+order by ".$sort_str." dawei_assignments_approval.end_ts,dawei_assignments_approval.start_ts OFFSET ". ($page-1) * 50 ." limit 50;";
 
 if (!($rs = pg_exec($sql))) {die;}
 $nrow = pg_num_rows($rs);

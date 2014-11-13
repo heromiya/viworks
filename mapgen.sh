@@ -5,13 +5,8 @@ MAP
   NAME "Dawei Landsat"
   UNITS dd
   EXTENT -180 -90 180 90
-  PROJECTION
-    'proj=longlat'
-    'ellps=WGS84'
-    'datum=WGS84'
-    'no_defs'
-  END
-    IMAGETYPE jpeg
+  PROJECTION 'proj=longlat' 'ellps=WGS84' 'datum=WGS84' 'no_defs' END
+  IMAGETYPE jpeg
 
   OUTPUTFORMAT
     NAME "aggpng24"
@@ -86,12 +81,7 @@ cat >> landsat.map <<EOF
       'ows_title' '${GID}'
     END
     STATUS OFF
-    PROJECTION
-    'proj=longlat'
-    'ellps=WGS84'
-    'datum=WGS84'
-    'no_defs'
-    END
+    PROJECTION 'proj=longlat' 'ellps=WGS84' 'datum=WGS84' 'no_defs' END
     OFFSITE  0 0 0
   END
 
@@ -106,12 +96,7 @@ cat >> landsat.map <<EOF
       'ows_title' '${GID}'
     END
     STATUS OFF
-    PROJECTION
-    'proj=longlat'
-    'ellps=WGS84'
-    'datum=WGS84'
-    'no_defs'
-    END
+    PROJECTION 'proj=longlat' 'ellps=WGS84' 'datum=WGS84' 'no_defs' END
     OFFSITE  0 0 0
     PROCESSING "SCALE=AUTO"
     PROCESSING "CLOSE_CONNECTION=DEFER"
@@ -120,5 +105,44 @@ cat >> landsat.map <<EOF
 
 EOF
 done
+
+for FILE in `find  /mnt/lv2/LaGURAM/products/quicklook -type f | grep "tif$"`; do
+GID=`basename $FILE | sed 's/.*\([A-Z0-9]\{21\}\)\..*/\1/g'`
+PROJ=`gdalinfo /mnt/lv2/LaGURAM/products/quicklook/P126/R052/L5126052_05220090114.TM-GLS2010.quicklook.tif -proj4 | grep +proj | sed "s/+//g; s/ /' '/g; s/''//g"`
+cat >> landsat.map <<EOF
+  LAYER
+    NAME '${GID}'
+    TYPE RASTER
+    DUMP true
+    MAXSCALE 1000000
+    DATA "$FILE"
+    METADATA
+      'ows_title' '${GID}'
+    END
+    STATUS OFF
+PROJECTION $PROJ END
+    OFFSITE  0 0 0
+  END
+
+  LAYER
+    NAME '${GID}_as'
+    TYPE RASTER
+    DUMP true
+    MAXSCALE 1000000
+    DATA "$FILE"
+    METADATA
+      'ows_title' '${GID}'
+    END
+    STATUS OFF
+PROJECTION $PROJ END
+    OFFSITE  0 0 0
+    PROCESSING "SCALE=AUTO"
+    PROCESSING "CLOSE_CONNECTION=DEFER"
+    PROCESSING "OVERSAMPLE_RATIO=1.5"
+  END
+
+EOF
+done
+
 echo "END" >> landsat.map
 exit 0
