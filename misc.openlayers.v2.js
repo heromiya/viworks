@@ -1,4 +1,4 @@
-OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
+//OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
 var map1 = new OpenLayers.Map();
 var map2 = new OpenLayers.Map();
 var WGS84 = new OpenLayers.Projection("EPSG:4326");
